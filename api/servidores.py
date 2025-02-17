@@ -37,5 +37,10 @@ def servidores():
 
 # Adaptador para o Vercel
 def handler(request):
-    with app.test_request_context(request.path, method=request.method, query_string=request.query_string):
-        return app.full_dispatch_request()
+    from werkzeug.middleware.dispatcher import DispatcherMiddleware
+    from werkzeug.serving import run_simple
+
+    app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+        '/api': app
+    })
+    return app
